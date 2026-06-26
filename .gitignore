@@ -6,3 +6,4 @@
 /src/*
 
 !/src/TaskManager.java
+!/src/Task.java
