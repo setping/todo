@@ -7,12 +7,13 @@ public final class TaskPrinter {
     }
 
     public static void printMenu() {
-        System.out.println("1. Добавить задачу");
-        System.out.println("2. Показать все задачи");
-        System.out.println("3. Удалить задачу (по номеру)");
-        System.out.println("4. Отметить задачу как выполненную");
-        System.out.println("0. Выход");
-        System.out.println("Введите номер операции:");
+        System.out.println("""
+                    1. Добавить задачу
+                    2. Показать все задачи
+                    3. Удалить задачу (по ID)
+                    4. Отметить задачу как выполненную
+                    0. Выход
+                    Введите номер операции:""");
     }
 
     public static void printAllTasks(List<Task> tasks) {
@@ -24,9 +25,9 @@ public final class TaskPrinter {
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
             if (task.isStatus()) {
-                System.out.println((i + 1) + ". [x] " + task.getName());
+                System.out.println(task.getId() + ". [x] " + task.getName());
             } else {
-                System.out.println((i + 1) + ". [ ] " + task.getName());
+                System.out.println(task.getId() + ". [ ] " + task.getName());
             }
         }
     }
