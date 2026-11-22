@@ -1,0 +1,16 @@
+CREATE DATABASE task_manager;
+
+CREATE TABLE "user" (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE task (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(50) NOT NULL,
+	priority INT NOT NULL CHECK (priority BETWEEN 1 AND 5),
+	description TEXT NOT NULL,
+	deadline TEXT NOT NULL,
+	status BOOLEAN NOT NULL DEFAULT FALSE,
+	user_id INT NOT NULL REFERENCES "user"(id)
+);
