@@ -1,7 +1,7 @@
 import java.util.List;
 import java.util.ArrayList;
 
-public class TaskHandlerImpl implements TaskHandler {
+public class InMemoryTaskHandler implements TaskHandler {
     private List<Task> tasks =  new ArrayList<>();
 
     @Override

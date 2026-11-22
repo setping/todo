@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class TaskManager {
     private Scanner scanner = new Scanner(System.in);
-    private TaskHandler taskHandler = new TaskHandlerImpl();
+    private TaskHandler taskHandler;
     private int nextID = 1;
 
     public static void main(String[] args) {
@@ -11,6 +11,8 @@ public class TaskManager {
     }
 
     public void start() {
+        taskHandler = chooseTaskHandler();
+
         boolean running = true;
         while (running) {
             TaskPrinter.printMenu();
@@ -24,17 +26,53 @@ public class TaskManager {
             int option = scanner.nextInt();
             scanner.nextLine();
 
-            switch (option) {
-                case 1 -> addTask();
-                case 2 -> TaskPrinter.printAllTasks(taskHandler.getTasks());  // 📚→🖨
-                case 3 -> deleteTask();
-                case 4 -> completeTask();
-                case 0 -> {
-                    running = false;
-                    System.out.println("Пока!");
+            try {
+                switch (option) {
+                    case 1 -> addTask();
+                    case 2 -> TaskPrinter.printAllTasks(taskHandler.getTasks());  // 📚→🖨
+                    case 3 -> deleteTask();
+                    case 4 -> completeTask();
+                    case 0 -> {
+                        running = false;
+                        System.out.println("Пока!");
+                    }
+                    default -> System.out.println("Введите корректный номер операции");
                 }
-                default -> System.out.println("Введите корректный номер операции");
+            } catch (RuntimeException e) {
+                System.out.println("Ошибка: " + e.getMessage());
             }
+        }
+    }
+
+    private TaskHandler chooseTaskHandler() {
+        System.out.println("Хранить задачи в базе данных? (1 - да, 0 - нет):");
+        String answer = scanner.nextLine().trim();
+        if (!answer.equals("1")) {
+            System.out.println("Задачи хранятся в памяти");
+            return new InMemoryTaskHandler();
+        }
+
+        String userName = readUserName();
+        try {
+            UserService userService = new UserService();
+            int userId = userService.saveUser(userName);
+            System.out.println("Задачи хранятся в базе данных");
+            return new DatabaseTaskHandler(userId);
+        } catch (RuntimeException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+            System.out.println("База недоступна, задачи хранятся в памяти");
+            return new InMemoryTaskHandler();
+        }
+    }
+
+    private String readUserName() {
+        while (true) {
+            System.out.print("Имя пользователя: ");
+            String userName = scanner.nextLine().trim();
+            if (!userName.isBlank()) {
+                return userName;
+            }
+            System.out.println("Имя не может быть пустым");
         }
     }
 
