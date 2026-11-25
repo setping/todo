@@ -1,31 +1,35 @@
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public final class DatabaseConnector {
-    private static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/task_manager";
-    private static final String DEFAULT_USER = "postgres";
+    private static final String PROPERTIES_FILE = "database.properties";
 
     private DatabaseConnector() {
         throw new UnsupportedOperationException();
     }
 
     public static Connection getConnection() throws SQLException {
-        String password = System.getenv("DB_PASSWORD");
-        if (password == null) {
-            throw new SQLException("Не задан пароль от базы: переменная окружения DB_PASSWORD");
-        }
-
-        String url = getEnvOrDefault("DB_URL", DEFAULT_URL);
-        String user = getEnvOrDefault("DB_USER", DEFAULT_USER);
+        Properties properties = loadProperties();
+        String url = properties.getProperty("db.url");
+        String user = properties.getProperty("db.user");
+        String password = properties.getProperty("db.password");
         return DriverManager.getConnection(url, user, password);
     }
 
-    private static String getEnvOrDefault(String name, String defaultValue) {
-        String value = System.getenv(name);
-        if (value == null || value.isBlank()) {
-            return defaultValue;
+    private static Properties loadProperties() throws SQLException {
+        Properties properties = new Properties();
+        try (InputStream input = DatabaseConnector.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
+            if (input == null) {
+                throw new SQLException("Не найден файл настроек " + PROPERTIES_FILE);
+            }
+            properties.load(input);
+        } catch (IOException e) {
+            throw new SQLException("Не удалось прочитать файл настроек " + PROPERTIES_FILE, e);
         }
-        return value;
+        return properties;
     }
 }
