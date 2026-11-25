@@ -1,12 +1,10 @@
 /*
 
 !/.gitignore
+!/pom.xml
+!/sql
 !/src
 
 /src/*
 
-!/src/TaskManager.java
-!/src/Task.java
-!/src/TaskHandler.java
-!/src/TaskHandlerImpl.java
-!/src/TaskPrinter.java
+!/src/main
